@@ -28,6 +28,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e3c83760-1a5a-4380-b9c6-318cc748f703"
+      }
+    },
+    "owner": "acoto89"
   }
 }
