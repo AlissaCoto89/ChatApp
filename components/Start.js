@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const backgroundColors = {
+const BackgroundColors = {
   black: { backgroundColor: "#090C08" },
   purple: { backgroundColor: "#474056" },
   grey: { backgroundColor: "#8A95A5" },
@@ -21,11 +21,11 @@ export default class Welcome extends Component {
     this.state = { name: "", color: "" };
   }
   render() {
-    const { black, purple, grey, green } = backgroundColors;
+    const { black, purple, grey, green } = BackgroundColors;
     return (
       <View style={{ flex: 1 }}>
         <ImageBackground
-          source={require("../assets/.png")}
+          source={require("../assets/background-image.png")}
           style={styles.image}
         >
           <Text style={styles.title}>Chat App</Text>
