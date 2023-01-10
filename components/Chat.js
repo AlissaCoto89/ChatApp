@@ -19,12 +19,13 @@ export default class Chat extends React.Component {
   componentDidMount() {
     let name = this.props.route.params.name;
     this.props.navigation.setOptions({ title: name });
-
+    // sets messages state with static messages
     this.setState({
       messages: [
         {
           _id: 1,
-          text: "Hello developer",
+          text: "Hello Friend!",
+          // adds a timestamp
           createdAt: new Date(),
           user: {
             _id: 2,
@@ -34,8 +35,9 @@ export default class Chat extends React.Component {
         },
         {
           _id: 2,
-          text: "You have entered the chat",
+          text: "You have entered the chat!",
           createdAt: new Date(),
+          // sets a system message
           system: true,
         },
       ],
@@ -47,7 +49,7 @@ export default class Chat extends React.Component {
       messages: GiftedChat.append(previousState.messages, messages),
     }));
   }
-
+  // styles message bubbles
   renderBubble(props) {
     return (
       <Bubble
@@ -89,10 +91,11 @@ export default class Chat extends React.Component {
           user={{
             _id: 1,
           }}
+          // adds accessibility messages and fixes android keyboard error
           accessible={true}
-          accessibilityLabel="Text message input field"
+          accessibilityLabel="Text message input field."
           accessibilityHint="You can type your message in here. You can send your message by pressing the button on the right."
-        />
+        ></GiftedChat>
         {Platform.OS === "android" ? (
           <KeyboardAvoidingView behavior="height" />
         ) : null}

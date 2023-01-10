@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const BackgroundColors = {
+// defines background colors
+const BACKGROUND_COLORS = {
   black: { backgroundColor: "#090C08" },
   purple: { backgroundColor: "#474056" },
   grey: { backgroundColor: "#8A95A5" },
@@ -21,7 +22,7 @@ export default class Welcome extends Component {
     this.state = { name: "", color: "" };
   }
   render() {
-    const { black, purple, grey, green } = BackgroundColors;
+    const { black, purple, grey, green } = BACKGROUND_COLORS;
     return (
       <View style={{ flex: 1 }}>
         <ImageBackground
@@ -105,7 +106,7 @@ export default class Welcome extends Component {
     );
   }
 }
-
+// styling app
 const styles = StyleSheet.create({
   nameInput: {
     fontSize: 16,
