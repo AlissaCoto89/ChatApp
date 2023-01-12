@@ -96,6 +96,7 @@ export default class Chat extends React.Component {
     );
   }
 
+  // save message to Firestore
   addMessage = () => {
     const message = this.state.messages[0];
     this.referenceChatMessages.add({
