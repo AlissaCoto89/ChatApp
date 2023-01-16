@@ -25,7 +25,6 @@ export default class Chat extends React.Component {
         avatar: "",
         name: "",
       },
-      isConnected: false,
     };
 
     if (!firebase.apps.length) {
@@ -58,50 +57,39 @@ export default class Chat extends React.Component {
   componentDidMount() {
     let name = this.props.route.params.name;
     this.props.navigation.setOptions({ title: name });
+    this.getMessages();
 
     NetInfo.fetch().then((connection) => {
       if (connection.isConnected) {
         this.setState({ isConnected: true });
-        console.log("online");
-
-        this.referenceChatMessages = firebase
-          .firestore()
-          .collection("messages");
-
-        this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
-          if (!user) {
-            firebase.auth().signInAnonymously();
-          }
-          // update user state with current user data
-          this.setState({
-            uid: user.uid,
-            messages: [],
-            user: {
-              _id: user.uid,
-              name: name,
-            },
-          });
-          // listen for collection changes for current user
-          this.unsubscribe = this.referenceChatMessages
-            .orderBy("createdAt", "desc")
-            .onSnapshot(this.onCollectionUpdate);
-        });
       } else {
         this.setState({ isConnected: false });
-        console.log("offline");
-
-        this.getMessages();
       }
+    });
+
+    this.referenceChatMessages = firebase.firestore().collection("messages");
+
+    this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        firebase.auth().signInAnonymously();
+      }
+      // update user state with current user data
+      this.setState({
+        uid: user?.uid,
+        messages: [],
+      });
+      // listen for collection changes for current user
+      this.unsubscribe = this.referenceChatMessages
+        .orderBy("createdAt", "desc")
+        .onSnapshot(this.onCollectionUpdate);
     });
   }
 
   componentWillUnmount() {
-    if (this.isConnected) {
-      // stop listening to authentication
-      this.authUnsubscribe();
-      // stop listening for changes
-      this.unsubscribe();
-    }
+    // stop listening to authentication
+    this.authUnsubscribe();
+    // stop listening for changes
+    this.unsubscribe();
   }
 
   async saveMessages() {
