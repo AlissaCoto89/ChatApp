@@ -7,14 +7,17 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { Component } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import CustomActions from "./CustomActions";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import MapView from "react-native-maps";
 
 const firebase = require("firebase");
 require("firebase/firestore");
 
-export default class Chat extends React.Component {
+export default class Chat extends Component {
   constructor() {
     super();
     this.state = {
@@ -25,6 +28,8 @@ export default class Chat extends React.Component {
         avatar: "",
         name: "",
       },
+      image: null,
+      location: null,
     };
 
     if (!firebase.apps.length) {
@@ -41,7 +46,7 @@ export default class Chat extends React.Component {
 
     this.referenceChatMessages = firebase.firestore().collection("messages");
   }
-
+  // get messages from local storage
   async getMessages() {
     let messages = "";
     try {
@@ -135,6 +140,8 @@ export default class Chat extends React.Component {
       text: message.text || "",
       createdAt: message.createdAt,
       user: message.user,
+      image: message.image || null,
+      location: message.location || null,
     });
   };
 
@@ -153,6 +160,8 @@ export default class Chat extends React.Component {
           name: data.user.name,
           avatar: data.user.avatar || "",
         },
+        image: data.image || null,
+        location: data.location || null,
       });
     });
     this.setState({ messages });
@@ -164,6 +173,28 @@ export default class Chat extends React.Component {
     } else {
       return <InputToolbar {...props} />;
     }
+  }
+
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
   }
 
   // styles message bubbles
@@ -197,29 +228,33 @@ export default class Chat extends React.Component {
     let backgroundColor = this.props.route.params.color;
 
     return (
-      <View style={[styles.chatContainer, { backgroundColor }]}>
-        <Text>{this.state.loggedInText}</Text>
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate("Welcome")}
-        ></TouchableOpacity>
-        <GiftedChat
-          renderBubble={this.renderBubble.bind(this)}
-          renderInputToolbar={this.renderInputToolbar.bind(this)}
-          messages={this.state.messages}
-          onSend={(messages) => this.onSend(messages)}
-          user={{
-            _id: this.state.uid,
-            avatar: "https://placeimg.com/140/140/any",
-          }}
-          // adds accessibility messages and fixes android keyboard error
-          accessible={true}
-          accessibilityLabel="Text message input field."
-          accessibilityHint="You can type your message in here. You can send your message by pressing the button on the right."
-        ></GiftedChat>
-        {Platform.OS === "android" ? (
-          <KeyboardAvoidingView behavior="height" />
-        ) : null}
-      </View>
+      <ActionSheetProvider>
+        <View style={[styles.chatContainer, { backgroundColor }]}>
+          <Text>{this.state.loggedInText}</Text>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("Welcome")}
+          ></TouchableOpacity>
+          <GiftedChat
+            renderBubble={this.renderBubble.bind(this)}
+            renderInputToolbar={this.renderInputToolbar.bind(this)}
+            renderActions={this.renderCustomActions.bind(this)}
+            renderCustomView={this.renderCustomView}
+            messages={this.state.messages}
+            onSend={(messages) => this.onSend(messages)}
+            user={{
+              _id: this.state.uid,
+              avatar: "https://placeimg.com/140/140/any",
+            }}
+            // adds accessibility messages and fixes android keyboard error
+            accessible={true}
+            accessibilityLabel="Text message input field."
+            accessibilityHint="You can type your message in here. You can send your message by pressing the button on the right."
+          ></GiftedChat>
+          {Platform.OS === "android" ? (
+            <KeyboardAvoidingView behavior="height" />
+          ) : null}
+        </View>
+      </ActionSheetProvider>
     );
   }
 }
