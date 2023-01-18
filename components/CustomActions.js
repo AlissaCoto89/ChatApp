@@ -4,23 +4,25 @@ import PropTypes from "prop-types";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
+import { Camera } from "expo-camera";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
 import firebase from "firebase";
 
 export default class CustomActions extends Component {
   // permission to select a photo from library
   imagePicker = async () => {
-    // expo permission
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     try {
+      // expo permission
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status === "granted") {
         // pick image
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images, // only images are allowed
         }).catch((error) => console.log(error));
         // canceled process
-        if (!result.cancelled) {
-          const imageUrl = await this.uploadImageFetch(result.uri);
+        if (!result.canceled) {
+          const imageUrl = await this.uploadImageFetch(result.assets[0].uri);
           this.props.onSend({ image: imageUrl });
         }
       }
@@ -31,9 +33,9 @@ export default class CustomActions extends Component {
 
   // permission to open camera and take a photo
   takePhoto = async () => {
-    const { status } = await Permissions.askAsync(
+    const { status } = await Camera.requestCameraPermissionsAsync(
       Permissions.CAMERA,
-      Permissions.CAMERA_ROLL
+      Permissions.MEDIA_LIBRARY
     );
     try {
       if (status === "granted") {
@@ -41,8 +43,8 @@ export default class CustomActions extends Component {
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         }).catch((error) => console.log(error));
 
-        if (!result.cancelled) {
-          const imageUrl = await this.uploadImageFetch(result.uri);
+        if (!result.canceled) {
+          const imageUrl = await this.uploadImageFetch(result.assets[0].uri);
           this.props.onSend({ image: imageUrl });
         }
       }
@@ -54,7 +56,7 @@ export default class CustomActions extends Component {
   // permission to find users location
   getLocation = async () => {
     try {
-      const { status } = await Permissions.askAsync(Permissions.LOCATION);
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
         const result = await Location.getCurrentPositionAsync({}).catch(
           (error) => console.log(error)

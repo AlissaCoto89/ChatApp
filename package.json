@@ -18,6 +18,7 @@
     "@react-navigation/stack": "^6.3.10",
     "cookies": "^0.8.0",
     "expo": "~47.0.9",
+    "expo-camera": "^13.1.0",
     "expo-image-picker": "~14.0.2",
     "expo-location": "~15.0.1",
     "expo-permissions": "~14.0.0",
