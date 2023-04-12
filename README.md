@@ -10,7 +10,7 @@ Chat App for both Android and iOS created with React Native. The app provides us
 - The chat must provide users with two additional communication features: sending images and location data.
 - Data gets stored online and offline.
 
-## Technologies Used:
+## Technology Stack:
 
 - JavaScript, 
 - React Native, 
