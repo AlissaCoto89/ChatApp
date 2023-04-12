@@ -1,3 +1,6 @@
+# ChatApp 
+
+## Intro:
 Chat App for both Android and iOS created with React Native. The app provides users with a chat interface and the ability to share images and their location.
 
 ## Key Features:
